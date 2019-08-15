@@ -10,6 +10,15 @@ import (
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
 )
 
+const (
+	location        string = "global"
+	keyRingID       string = "key.ring.id"
+	cryptoKeyName   string = "crypto.key.name"
+	projectName     string = "gcp.project.name"
+	keyRingParent   string = "projects/%s/locations/%s"
+	cryptoKeyParent string = "projects/%s/locations/%s/keyRings/%s"
+)
+
 func main() {
 	ctx := context.Background()
 	client, err := cloudkms.NewKeyManagementClient(ctx, option.WithCredentialsFile("kms.json"))
@@ -17,11 +26,12 @@ func main() {
 		log.Fatal(err)
 	}
 	defer client.Close()
-	 parentName := fmt.Sprintf("projects/%s/locations/%s", "planday-api-dev", "global")
-	// Call the API.
+
+	// first create a key ring
+	parentName := fmt.Sprintf(keyRingParent, projectName, location)
 	request := &kmspb.CreateKeyRingRequest{
 		Parent:    parentName,
-		KeyRingId: "test-key-ring",
+		KeyRingId: keyRingID,
 	}
 
 	result, err := client.CreateKeyRing(ctx, request)
@@ -30,40 +40,23 @@ func main() {
 	}
 	log.Printf("Created key ring: %s", result)
 
-	/*req := &kmspb.ListKeyRingsRequest{
-		Parent: parentName,
-	}
-	// Query the API.
-	it := client.ListKeyRings(ctx, req)
-
-	// Iterate and print results.
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			log.Fatalf("Failed to list key rings: %v", err)
-		}
-		log.Printf("KeyRing: %q\n", resp.Name)
-	}*/
-
+	// then add a key to key-ring
 	r := &kmspb.CreateCryptoKeyRequest{
-		Parent:      fmt.Sprintf("projects/%s/locations/%s/keyRings/%s", "planday-api-dev", "global", "test-key-ring"),
-		CryptoKeyId: "test-key-id",
+		Parent:      fmt.Sprintf(cryptoKeyParent, projectName, location, keyRingID),
+		CryptoKeyId: cryptoKeyName,
 		CryptoKey: &kmspb.CryptoKey{
-			Purpose: kmspb.CryptoKey_ENCRYPT_DECRYPT,
-			VersionTemplate: &kmspb.CryptoKeyVersionTemplate{
-				Algorithm: kmspb.CryptoKeyVersion_GOOGLE_SYMMETRIC_ENCRYPTION,
-			},
+			Purpose:         kmspb.CryptoKey_ENCRYPT_DECRYPT,
+			VersionTemplate: &kmspb.CryptoKeyVersionTemplate{Algorithm: kmspb.CryptoKeyVersion_GOOGLE_SYMMETRIC_ENCRYPTION},
 		},
 	}
 
+	// finally create the keyring
 	res, err := client.CreateCryptoKey(ctx, r)
 	if err != nil {
 		log.Println(err)
 	}
-	log.Printf("created crypto key %s", res)
 
+	// use this reference for encryption-decryption in rest of your project
+	log.Printf("created crypto key %s", res)
 
 }
