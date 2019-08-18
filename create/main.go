@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	location        string = "global"
-	keyRingID       string = "key.ring.id"
-	cryptoKeyName   string = "crypto.key.name"
-	projectName     string = "gcp.project.name"
+	location        string = "global"               // replace this as per your project.
+	keyRingID       string = "my-key-ring"          // replace this as per your project.
+	cryptoKeyName   string = "my-key"               // replace this as per your project.
+	projectName     string = "modern-unison-244808" // replace this as per your project.
 	keyRingParent   string = "projects/%s/locations/%s"
 	cryptoKeyParent string = "projects/%s/locations/%s/keyRings/%s"
 )
