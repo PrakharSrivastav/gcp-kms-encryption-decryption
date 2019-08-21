@@ -1,6 +1,6 @@
 # gcp-enc-dec
 
-This is a demo application to support this blog post. It demonstrates how to use GCP Cloud KMS to easily manage secrets.
+This is a demo application to support [this](https://www.prakharsrivastav.com/posts/gcp-using-kms-to-manage-secrets/) blog post. It demonstrates how to use GCP Cloud KMS to easily manage secrets.
 
 ## setup
 
