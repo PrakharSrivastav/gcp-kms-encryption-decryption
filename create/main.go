@@ -11,27 +11,28 @@ import (
 )
 
 const (
-	location        string = "global"               // replace this as per your project.
-	keyRingID       string = "my-key-ring"          // replace this as per your project.
-	cryptoKeyName   string = "my-key"               // replace this as per your project.
-	projectName     string = "modern-unison-244808" // replace this as per your project.
-	keyRingParent   string = "projects/%s/locations/%s"
-	cryptoKeyParent string = "projects/%s/locations/%s/keyRings/%s"
+	Location        string = "global"              // replace this as per your project.
+	KeyRingID       string = "my-key-ring"         // replace this as per your project.
+	CryptoKeyName   string = "my-key"              // replace this as per your project.
+	ProjectName     string = "my-gcp-project-name" // replace this as per your project.
+	KeyRingParent   string = "projects/%s/locations/%s"
+	CryptoKeyParent string = "projects/%s/locations/%s/keyRings/%s"
+	KMSAdminPath    string = "../kms-admin.json"
 )
 
 func main() {
 	ctx := context.Background()
-	client, err := cloudkms.NewKeyManagementClient(ctx, option.WithCredentialsFile("kms.json"))
+	client, err := cloudkms.NewKeyManagementClient(ctx, option.WithCredentialsFile(KMSAdminPath))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer client.Close()
 
-	// first create a key ring
-	parentName := fmt.Sprintf(keyRingParent, projectName, location)
+	// first create a key ring in your project and location
+	parentName := fmt.Sprintf(KeyRingParent, ProjectName, Location)
 	request := &kmspb.CreateKeyRingRequest{
 		Parent:    parentName,
-		KeyRingId: keyRingID,
+		KeyRingId: KeyRingID,
 	}
 
 	result, err := client.CreateKeyRing(ctx, request)
@@ -42,11 +43,13 @@ func main() {
 
 	// then add a key to key-ring
 	r := &kmspb.CreateCryptoKeyRequest{
-		Parent:      fmt.Sprintf(cryptoKeyParent, projectName, location, keyRingID),
-		CryptoKeyId: cryptoKeyName,
+		Parent:      fmt.Sprintf(CryptoKeyParent, ProjectName, Location, KeyRingID),
+		CryptoKeyId: CryptoKeyName,
 		CryptoKey: &kmspb.CryptoKey{
-			Purpose:         kmspb.CryptoKey_ENCRYPT_DECRYPT,
-			VersionTemplate: &kmspb.CryptoKeyVersionTemplate{Algorithm: kmspb.CryptoKeyVersion_GOOGLE_SYMMETRIC_ENCRYPTION},
+			Purpose: kmspb.CryptoKey_ENCRYPT_DECRYPT,
+			VersionTemplate: &kmspb.CryptoKeyVersionTemplate{
+				Algorithm: kmspb.CryptoKeyVersion_GOOGLE_SYMMETRIC_ENCRYPTION,
+			},
 		},
 	}
 
