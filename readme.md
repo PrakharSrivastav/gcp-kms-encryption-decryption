@@ -9,9 +9,9 @@ Create 3 service accounts with the below permissions
 - [Cloud KMS CryptoKey Encrypter/Decrypter](docs/kms-encdec-2.png)
 - [Cloud Datastore User](docs/datastore-user.png)
 
-Save `Cloud KMS Admin` service account key as kms-admin.json in the project root.
-Save `Cloud KMS CryptoKey Encrypter/Decrypter` service account key as kms-enc-dec.json in the project root.
-Save `Cloud Datastore User` service account key as datastore-user.json in the project root.
+1. Save `Cloud KMS Admin` service account key as kms-admin.json in the project root.
+2. Save `Cloud KMS CryptoKey Encrypter/Decrypter` service account key as kms-enc-dec.json in the project root.
+3. Save `Cloud Datastore User` service account key as datastore-user.json in the project root.
 
 
 Replace the below constants in all the files with your gcp-project settings 
